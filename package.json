@@ -1,0 +1,26 @@
+{
+  "name": "redisjser",
+  "version": "1.0.1",
+  "description": "Create a JS object based on the JSON keys of a redis database that updates as the database changes.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "redis",
+    "object",
+    "redisjser"
+  ],
+  "homepage": "https://github.com/BogdanCln/redisJSer",
+  "author": "Bogdan Calina bogdan.calina97@gmail.com",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^2.6.1",
+    "deferred": "^0.7.9",
+    "redis": "^2.8.0"
+  },
+  "devDependencies": {
+    "eslint": "^5.6.1",
+    "eslint-config-google": "^0.10.0"
+  }
+}
