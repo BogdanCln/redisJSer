@@ -1,6 +1,6 @@
 {
   "name": "redisjser",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Create a JS object based on the JSON keys of a redis database that updates as the database changes.",
   "main": "index.js",
   "scripts": {
