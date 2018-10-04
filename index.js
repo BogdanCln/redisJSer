@@ -5,6 +5,7 @@ const redis = require("redis"),
         post: "6379",
         db: 1
     },
+    EventEmitter = require('events'),
     Deferred = require('deferred');
 
 const EVENTS = [
@@ -13,25 +14,26 @@ const EVENTS = [
 ];
 
 class redisJSer {
-    constructor(data, options, events, rc) {
+    constructor(data, options, redisEvents, rc) {
         this.redisDump = data;
         this.options = options;
-        this.events = events;
+        this.redisEvents = redisEvents;
         this.redisController = rc;
+        this.announcer = new EventEmitter();
         this.startUpdater();
     }
 
     static async createInstance(args = undefined) {
         let options = redisOptions,
-            events = EVENTS;
+            redisEvents = EVENTS;
         if (args !== undefined) {
             Object.keys(args).forEach(arg => {
                 options[arg] = args[arg];
                 if (arg === "db") {
-                    events.forEach((ev, i) => {
+                    redisEvents.forEach((ev, i) => {
                         let dbIndex = ev.indexOf("@");
                         if (dbIndex !== -1) {
-                            events[i] = ev.slice(0, dbIndex + 1) + args.db + ev.slice(dbIndex + 2);
+                            redisEvents[i] = ev.slice(0, dbIndex + 1) + args.db + ev.slice(dbIndex + 2);
                         }
                     });
                 }
@@ -41,7 +43,7 @@ class redisJSer {
         let rc = redis.createClient(options);
 
         return redisJSer.loadRedisData(rc)(redisDump => {
-            return new redisJSer(redisDump, options, events, rc);
+            return new redisJSer(redisDump, options, redisEvents, rc);
         });
     }
 
@@ -126,16 +128,16 @@ class redisJSer {
                 parseMsg.promise.then(status => {
                     switch (status) {
                         case 0:
-                            // console.log("Error on this channel: " + channel);
+                            self.announcer.emit('error', channel);                            
                             break;
                         case 1:
-                            console.log("Update ", key);
+                            self.announcer.emit('update', [actionType, key]);
                             break;                        
                     }
                 });
             });
 
-        self.events.forEach(ev => {
+        self.redisEvents.forEach(ev => {
             console.log("Sub to ", ev);
             pubSubClient.subscribe(ev);
         });
